@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/25"
+<BorderPane xmlns="http://javafx.com/javafx/22"
 	xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="application.controllers.MainController">
 	<bottom>
@@ -44,9 +44,6 @@
 									</children>
 								</HBox>
 							</content>
-							<padding>
-								<Insets top="10.0" />
-							</padding>
 						</TitledPane>
 						<TitledPane fx:id="titledPaneModelos"
 							alignment="TOP_LEFT" animated="true" disable="true"
@@ -70,9 +67,6 @@
 					</panes>
 				</Accordion>
 			</children>
-			<BorderPane.margin>
-				<Insets />
-			</BorderPane.margin>
 		</VBox>
 	</bottom>
 </BorderPane>
