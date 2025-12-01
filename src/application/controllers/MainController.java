@@ -16,9 +16,9 @@ public class MainController {
 	@FXML
 	private ComboBox<LinhaMedidor> comboBox;
 	@FXML
-	private TreeView<CategoriaMedidor> treeView;
+	private TreeView<String> treeView;
 	@FXML
-	private TreeItem<CategoriaMedidor> treeItem;
+	private TreeItem<String> treeItem;
 	@FXML
 	private TitledPane titledPaneLinhas;
 	@FXML
@@ -102,44 +102,64 @@ public class MainController {
 			LinhaMedidor linhaSelecionada = comboBox.getValue();
 			if (linhaSelecionada.getNomeLinhaMedidor() == "Cronos") {
 				// Settando as categorias no nó raiz
-				ArrayList<TreeItem<CategoriaMedidor>> categorias = new ArrayList<>();
+				ArrayList<TreeItem<String>> categorias = new ArrayList<>();
 
 				for (CategoriaMedidor cat : linhasMedidores.get(0).getCategoriasMedidor()) {
-					categorias.add(new TreeItem<>(cat));
+					categorias.add(new TreeItem<>(cat.getNomeCategoriaMedidor()));
 				}
 
 				treeItem.getChildren().setAll(categorias);
 
-//				TODO
-//				// Settando os modelos de cada categoria
-//				for (int i = 0; i < linhasMedidores.get(0).getCategoriasMedidor().size(); i++) {
-//
-//					CategoriaMedidor categoria = linhasMedidores.get(0).getCategoriasMedidor().get(i);
-//					TreeItem<CategoriaMedidor> categoriaItem = categorias.get(i);
-//
-//					ArrayList<TreeItem<ModeloMedidor>> modelos = new ArrayList<>();
-//
-//					for (ModeloMedidor mod : categoria.getModelosMedidor()) {
-//						modelos.add(new TreeItem<>(mod));
-//					}
-//
-//					categoriaItem.getChildren().get(i).getChildren().setAll(modelos);
-//				}
+				// Settando os modelos de cada categoria
+				for (int i = 0; i < linhasMedidores.get(0).getCategoriasMedidor().size(); i++) {
+
+					CategoriaMedidor categoria = linhasMedidores.get(0).getCategoriasMedidor().get(i);
+
+					ArrayList<TreeItem<String>> modelos = new ArrayList<>();
+
+					for (ModeloMedidor mod : categoria.getModelosMedidor()) {
+						modelos.add(new TreeItem<>(mod.getNomeModeloMedidor()));
+//						System.out.println(mod);
+					}
+
+//					System.out.println(modelos);
+
+					treeItem.getChildren().get(i).getChildren().setAll(modelos);
+					treeItem.getChildren().get(i).setExpanded(true);
+				}
 
 			} else if (linhaSelecionada.getNomeLinhaMedidor() == "Ares") {
 
-				ArrayList<TreeItem<CategoriaMedidor>> filhos = new ArrayList<>();
+				// Settando as categorias no nó raiz
+				ArrayList<TreeItem<String>> categorias = new ArrayList<>();
 
 				for (CategoriaMedidor cat : linhasMedidores.get(1).getCategoriasMedidor()) {
-					filhos.add(new TreeItem<>(cat));
+					categorias.add(new TreeItem<>(cat.getNomeCategoriaMedidor()));
 				}
 
-				treeItem.getChildren().setAll(filhos);
-			}
+				treeItem.getChildren().setAll(categorias);
 
+				// Settando os modelos de cada categoria
+				for (int i = 0; i < linhasMedidores.get(1).getCategoriasMedidor().size(); i++) {
+
+					CategoriaMedidor categoria = linhasMedidores.get(1).getCategoriasMedidor().get(i);
+
+					ArrayList<TreeItem<String>> modelos = new ArrayList<>();
+
+					for (ModeloMedidor mod : categoria.getModelosMedidor()) {
+						modelos.add(new TreeItem<>(mod.getNomeModeloMedidor()));
+//						System.out.println(mod);
+					}
+
+//					System.out.println(modelos);
+
+					treeItem.getChildren().get(i).getChildren().setAll(modelos);
+					treeItem.getChildren().get(i).setExpanded(true);
+				}
+			}
+			treeItem.setExpanded(true);
 			titledPaneModelos.setDisable(false);
 			titledPaneModelos.setExpanded(true);
-			treeItem.setExpanded(true);
 
 		} catch (Exception e) {
 			System.out.println("Erro ao selecionar linha: " + e.getMessage());

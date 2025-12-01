@@ -58,7 +58,7 @@
 										</Label>
 										<TreeView fx:id="treeView" maxHeight="275"
 											prefWidth="200.0">
-											<TreeItem fx:id="treeItem" />
+											<TreeItem fx:id="treeItem" expanded="true" />
 										</TreeView>
 									</children>
 								</HBox>
