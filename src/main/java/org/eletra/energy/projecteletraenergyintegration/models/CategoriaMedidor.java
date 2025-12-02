@@ -1,4 +1,4 @@
-package application.models;
+package org.eletra.energy.projecteletraenergyintegration.models;
 
 import java.util.ArrayList;
 

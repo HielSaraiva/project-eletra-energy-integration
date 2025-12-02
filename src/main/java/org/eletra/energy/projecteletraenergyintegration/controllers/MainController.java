@@ -1,10 +1,10 @@
-package application.controllers;
+package org.eletra.energy.projecteletraenergyintegration.controllers;
 
 import java.util.ArrayList;
 
-import application.models.CategoriaMedidor;
-import application.models.LinhaMedidor;
-import application.models.ModeloMedidor;
+import org.eletra.energy.projecteletraenergyintegration.models.CategoriaMedidor;
+import org.eletra.energy.projecteletraenergyintegration.models.LinhaMedidor;
+import org.eletra.energy.projecteletraenergyintegration.models.ModeloMedidor;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TitledPane;
