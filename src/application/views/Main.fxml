@@ -40,7 +40,7 @@
 											</HBox.margin>
 										</Label>
 										<ComboBox fx:id="comboBox"
-											onAction="#aoSelecionarLinha" prefWidth="150.0" />
+											onAction="#onLineSelect" prefWidth="150.0" />
 									</children>
 								</HBox>
 							</content>
