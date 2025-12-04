@@ -8,3 +8,11 @@
 - Repositório da aplicação javaFX projeto 01 devidamente atualizada com a TAG do projeto 01
 seguindo os conceitos do Git‑flow.
 - Disponibilização do arquivo .Jar da aplicação projeto de integração de acordo com as especificações do projeto 01.
+
+## Projeto 02
+
+### Entregas esperadas
+- Dois repositórios um contendo o back‑end e o outro contendo o front‑end da aplicação javaFX
+   devidamente atualizados com TAGS do projeto 02.
+- Disponibilização do arquivo .Jar da aplicação projeto de integração de acordo com as especifi‑
+   cações do projeto 02.
