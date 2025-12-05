@@ -31,11 +31,10 @@ public class MainController {
     private BackController backController;
 
     private void loadComboBox() {
-        ArrayList<String> meterLinesNames = new ArrayList<String>();
 
-        for (LineMeter meter : backController.getMeterLines()) {
-            meterLinesNames.add(meter.getName());
-        }
+        ArrayList<String> meterLinesNames = backController.getMeterLines().stream()
+                .map(LineMeter::getName)
+                .collect(Collectors.toCollection(ArrayList::new));
 
         comboBox.getItems().addAll(meterLinesNames);
     }
@@ -47,9 +46,13 @@ public class MainController {
                 .findFirst()
                 .orElse(null);
 
-        List<TreeItem<String>> categories = selectedLine.getMeterCategories().stream()
+        if (selectedLine == null) {
+            throw new IllegalArgumentException("Line not found");
+        }
+
+        ArrayList<TreeItem<String>> categories = selectedLine.getMeterCategories().stream()
                 .map(cat -> new TreeItem<>(cat.getName()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(ArrayList::new));
 
         treeItem.getChildren().setAll(categories);
 
@@ -88,6 +91,8 @@ public class MainController {
             treeItem.setExpanded(true);
             titledPaneModelos.setDisable(false);
             titledPaneModelos.setExpanded(true);
+        } catch (IllegalArgumentException iae) {
+            System.out.println("Error on load TreeItem: " + iae.getMessage());
 
         } catch (Exception e) {
             System.out.println("Error on line select: " + e.getMessage());
