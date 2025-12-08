@@ -56,19 +56,20 @@ public class MainController {
 
         treeItem.getChildren().setAll(categories);
 
-        for (int i = 0; i < selectedLine.getMeterCategories().size(); i++) {
-
-            CategoryMeter category = selectedLine.getMeterCategories().get(i);
+        for (CategoryMeter category : selectedLine.getMeterCategories()) {
 
             List<TreeItem<String>> modelItems = category.getMeterModels().stream()
                     .map(mod -> new TreeItem<>(mod.getName()))
                     .collect(Collectors.toList());
 
-            TreeItem<String> categoryTreeItem = treeItem.getChildren().get(i);
+            TreeItem<String> categoryTreeItem = treeItem.getChildren().get(
+                    selectedLine.getMeterCategories().indexOf(category)
+            );
 
             categoryTreeItem.getChildren().setAll(modelItems);
             categoryTreeItem.setExpanded(true);
         }
+
     }
 
     // Métodos FXML
