@@ -1,35 +1,33 @@
 package org.eletra.energy.backend.models;
 
-import java.util.ArrayList;
+import lombok.*;
 
+import javax.persistence.*;
+import java.util.List;
+import java.util.UUID;
+
+@Entity
+@Table(name = "meter_category")
+@Data
+@NoArgsConstructor
 public class CategoryMeter {
 
-	private String name;
-	private ArrayList<ModelMeter> meterModels;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
-	public CategoryMeter(String name, ArrayList<ModelMeter> meterModels) {
-		this.name = name;
-		this.meterModels = meterModels;
-	}
+    @Column(name = "name", unique = true, nullable = false)
+    private String name;
 
-	public String getName() {
-		return name;
-	}
+    @OneToMany(mappedBy = "category", cascade =  CascadeType.ALL)
+    private List<ModelMeter> meterModels;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    @ManyToOne
+    @JoinColumn(name = "line_id", nullable = false)
+    private LineMeter line;
 
-	public ArrayList<ModelMeter> getMeterModels() {
-		return meterModels;
-	}
-
-	public void setMeterModels(ArrayList<ModelMeter> meterModels) {
-		this.meterModels = meterModels;
-	}
-
-	@Override
-	public String toString() {
-		return "CategoryMeter [name=" + name + ", meterModels=" + meterModels + "]";
-	}
+    public CategoryMeter(String name, LineMeter line) {
+        this.name = name;
+        this.line = line;
+    }
 }
