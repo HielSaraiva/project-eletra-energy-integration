@@ -19,7 +19,7 @@ public class CategoryMeter {
     @Column(name = "name", unique = true, nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "category", cascade =  CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "category", cascade =  CascadeType.ALL)
     private List<ModelMeter> meterModels;
 
     @ManyToOne

@@ -20,7 +20,7 @@ public class LineMeter {
     @Column(name = "name", unique = true, nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "line", cascade = CascadeType.ALL)
     private List<CategoryMeter> meterCategories;
 
     public LineMeter(String name) {
