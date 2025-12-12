@@ -1,24 +1,29 @@
 package org.eletra.energy.backend.models;
 
+import javax.persistence.*;
+import lombok.*;
+
+import java.util.UUID;
+
+@Entity
+@Table(name = "meter_model")
+@Data
+@NoArgsConstructor
 public class ModelMeter {
 
-	private String name;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
-	public ModelMeter(String name) {
-		super();
-		this.name = name;
-	}
+    @Column(name = "name", unique = true, nullable = false)
+    private String name;
 
-	public String getName() {
-		return name;
-	}
+    @ManyToOne
+    @JoinColumn(name= "category_id", nullable = false)
+    private CategoryMeter category;
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	@Override
-	public String toString() {
-		return "ModelMeter [name=" + name + "]";
-	}
+    public ModelMeter(String name, CategoryMeter category) {
+        this.name = name;
+        this.category = category;
+    }
 }

@@ -76,7 +76,6 @@ public class MainController {
     @FXML
     public void initialize() {
         backController = new BackController();
-        backController.instantiateLines();
         loadComboBox();
     }
 
