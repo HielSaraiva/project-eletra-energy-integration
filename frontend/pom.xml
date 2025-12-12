@@ -25,14 +25,45 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
+                <groupId>com.zenjava</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>8.1.4</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>javafx-packager</groupId>
+                        <artifactId>javafx-packager</artifactId>
+                        <version>1.8.0_20</version>
+                        <scope>system</scope>
+                        <systemPath>${java.home}/../lib/ant-javafx.jar</systemPath>
+                    </dependency>
+                </dependencies>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <verbose>true</verbose>
+                    <mainClass>org.eletra.energy.frontend.Main</mainClass>
+                    <vendor>Hiel Saraiva</vendor>
+                    <appName>ProjectIntegration</appName>
+                    <needShortcut>true</needShortcut>
+                    <needMenu>true</needMenu>
                 </configuration>
+                <executions>
+                    <execution>
+                        <!-- required before build-native -->
+                        <id>create-jfxjar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build-jar</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-native</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build-native</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
+
 </project>
