@@ -19,7 +19,7 @@ jobs:
           distribution: temurin
           java-version: '8'
 
-      - name: Cache Maven local repository (backend)
+      - name: Cache Maven local repository
         uses: actions/cache@v4
         with:
           path: ~/.m2/repository
@@ -28,7 +28,7 @@ jobs:
             ${{ runner.os }}-m2-back-
 
       - id: build-back
-        name: Build backend (if backend/pom.xml exists)
+        name: Build backend
         run: |
           if [ -f backend/pom.xml ]; then
             mvn -f backend/pom.xml -B -ntp clean package
@@ -69,7 +69,7 @@ jobs:
           }
         shell: powershell
 
-      - name: Install Inno Setup (for Windows installer)
+      - name: Install Inno Setup
         run: choco upgrade innosetup -y --no-progress
         shell: powershell
 
@@ -82,7 +82,7 @@ jobs:
           exit 0
         shell: powershell
 
-      - name: Cache Maven local repository (frontend)
+      - name: Cache Maven local repository
         uses: actions/cache@v4
         with:
           path: ~/.m2/repository
@@ -102,7 +102,7 @@ jobs:
           )
         shell: cmd
 
-      - name: Upload frontend artifacts (Windows)
+      - name: Upload frontend artifacts
         if: ${{ steps.build-front.outputs.built == 'true' }}
         uses: actions/upload-artifact@v4
         with:
