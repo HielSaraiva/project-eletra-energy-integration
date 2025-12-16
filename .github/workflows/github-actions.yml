@@ -32,6 +32,7 @@ jobs:
         run: |
           if [ -f backend/pom.xml ]; then
             if [ -f backend/mvnw ]; then
+              chmod +x backend/mvnw
               ./backend/mvnw -f backend/pom.xml -B -ntp clean package
             else
               mvn -f backend/pom.xml -B -ntp clean package
@@ -74,14 +75,16 @@ jobs:
         shell: powershell
 
       - name: Install Inno Setup (for Windows installer)
-        run: choco install innosetup -y --no-progress
+        run: choco upgrade innosetup -y --no-progress
         shell: powershell
 
       - name: Verify Inno Setup available
         run: |
           $cmd = Get-Command iscc.exe -ErrorAction SilentlyContinue
           if (-not $cmd) { throw "Inno Setup (iscc.exe) not found in PATH." }
-          iscc.exe /?
+          # Nota: o ISCC pode retornar exit code 1 ao mostrar ajuda; isso não é falha real.
+          iscc.exe /? | Out-String | Write-Host
+          exit 0
         shell: powershell
 
       - name: Cache Maven local repository (frontend)
