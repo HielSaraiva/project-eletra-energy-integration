@@ -10,6 +10,10 @@ public class CategoryMeterDTO {
     private List<ModelMeterDTO> meterModels;
     private LineMeterDTO line;
 
+    public CategoryMeterDTO() {
+
+    }
+
     public CategoryMeterDTO(UUID id, String name, LineMeterDTO line) {
         this.id = id;
         this.name = name;

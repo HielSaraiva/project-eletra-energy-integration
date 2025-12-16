@@ -13,11 +13,11 @@ import java.util.List;
 
 public class ApiCategoryMeterService {
 
-    private OkHttpClient client;
+    private final OkHttpClient client = new OkHttpClient();
 
-    public List<CategoryMeterDTO> getCategories(String endpoint) throws IOException {
+    public List<CategoryMeterDTO> getCategoryMeters(String endpoint) throws IOException {
 
-        Request request = new Request.Builder().url("https://localhost:8080/api" + endpoint).build();
+        Request request = new Request.Builder().url("http://localhost:8080/api/" + endpoint).build();
 
         try (Response response = client.newCall(request).execute()) {
 

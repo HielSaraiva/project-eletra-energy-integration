@@ -12,11 +12,11 @@ import java.util.List;
 
 public class ApiLineMeterService {
 
-    private OkHttpClient client;
+    private final OkHttpClient client = new OkHttpClient();
 
     public List<LineMeterDTO> getLineMeters(String endpoint) throws IOException {
 
-        Request request = new Request.Builder().url("http://localhost:8080/api" + endpoint).build();
+        Request request = new Request.Builder().url("http://localhost:8080/api/" + endpoint).build();
 
         try (Response response = client.newCall(request).execute()) {
 

@@ -9,6 +9,10 @@ public class ModelMeterDTO {
     private String name;
     private CategoryMeterDTO category;
 
+    public ModelMeterDTO() {
+
+    }
+
     public ModelMeterDTO(UUID id, String name, CategoryMeterDTO category) {
         this.id = id;
         this.name = name;
