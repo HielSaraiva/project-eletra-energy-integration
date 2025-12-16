@@ -31,12 +31,7 @@ jobs:
         name: Build backend (if backend/pom.xml exists)
         run: |
           if [ -f backend/pom.xml ]; then
-            if [ -f backend/mvnw ]; then
-              chmod +x backend/mvnw
-              ./backend/mvnw -f backend/pom.xml -B -ntp clean package
-            else
-              mvn -f backend/pom.xml -B -ntp clean package
-            fi
+            mvn -f backend/pom.xml -B -ntp clean package
             echo "built=true" >> $GITHUB_OUTPUT
           else
             echo "built=false" >> $GITHUB_OUTPUT
@@ -99,11 +94,7 @@ jobs:
         name: Build frontend (JavaFX native)
         run: |
           if exist frontend\pom.xml (
-            if exist frontend\mvnw.cmd (
-              frontend\mvnw.cmd -f frontend\pom.xml -B -ntp clean package
-            ) else (
-              mvn -f frontend\pom.xml -B -ntp clean package
-            )
+            mvn -f frontend\pom.xml -B -ntp clean package
             echo built=true>>%GITHUB_OUTPUT%
           ) else (
             echo built=false>>%GITHUB_OUTPUT%
