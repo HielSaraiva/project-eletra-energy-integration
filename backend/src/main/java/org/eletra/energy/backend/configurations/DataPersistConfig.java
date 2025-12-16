@@ -1,4 +1,4 @@
-package org.eletra.energy.backend.configs;
+package org.eletra.energy.backend.configurations;
 
 import org.eletra.energy.backend.models.CategoryMeter;
 import org.eletra.energy.backend.models.LineMeter;

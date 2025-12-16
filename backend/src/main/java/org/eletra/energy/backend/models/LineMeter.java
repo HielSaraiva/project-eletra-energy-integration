@@ -1,5 +1,7 @@
 package org.eletra.energy.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -21,6 +23,7 @@ public class LineMeter {
     private String name;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "line", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<CategoryMeter> meterCategories;
 
     public LineMeter(String name) {

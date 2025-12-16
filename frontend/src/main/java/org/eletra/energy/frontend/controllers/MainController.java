@@ -5,10 +5,10 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import org.eletra.energy.backend.controllers.BackController;
-import org.eletra.energy.backend.models.CategoryMeter;
-import org.eletra.energy.backend.models.LineMeter;
-import org.eletra.energy.backend.models.ModelMeter;
+//import org.eletra.energy.backend.controllers.BackController;
+//import org.eletra.energy.backend.models.LineMeter;
+//import org.eletra.energy.backend.models.CategoryMeter;
+//import org.eletra.energy.backend.models.ModelMeter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class MainController {
     private TitledPane titledPaneModelos;
 
     // Atributos auxiliares
-    private BackController backController;
+//    private BackController backController;
 
     private void loadComboBox() {
 
