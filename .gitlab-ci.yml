@@ -1,0 +1,69 @@
+image: maven:3.9.11-eclipse-temurin-8
+
+variables:
+  MAVEN_OPTS: >-
+    -Dhttps.protocols=TLSv1.2
+    -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository
+    -Dorg.slf4j.simpleLogger.showDateTime=true
+    -Djava.awt.headless=true
+
+cache:
+  paths:
+    - .m2/repository
+
+stages:
+  - clean
+  - test
+  - package
+
+# BACKEND
+
+backend-clean:
+  stage: clean
+  script:
+    - echo "Running backend-clean stage"
+    - cd backend
+    - mvn clean
+
+backend-test:
+  stage: test
+  script:
+    - echo "Running backend-test stage"
+    - cd backend
+    - mvn test
+
+backend-package:
+  stage: package
+  script:
+    - echo "Running backend-package stage"
+    - cd backend
+    - mvn package
+  artifacts:
+    paths:
+      - backend/target/backend-1.0-SNAPSHOT.jar
+
+# FRONTEND
+
+frontend-clean:
+  stage: clean
+  script:
+    - echo "Running frontend-clean stage"
+    - cd frontend
+    - mvn clean
+
+frontend-test:
+  stage: test
+  script:
+    - echo "Running frontend-test stage"
+    - cd frontend
+    - mvn test
+
+frontend-package:
+  stage: package
+  script:
+    - echo "Running frontend-package stage"
+    - cd frontend
+    - mvn package
+  artifacts:
+    paths:
+      - frontend/target/jfx/native/ProjectIntegration-1.0.exe

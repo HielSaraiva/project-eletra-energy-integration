@@ -1,4 +1,4 @@
-package org.eletra.energy.backend.resources;
+package org.eletra.energy.backend.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
