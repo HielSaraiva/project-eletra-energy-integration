@@ -1,5 +1,7 @@
 package org.eletra.energy.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -20,10 +22,12 @@ public class CategoryMeter {
     private String name;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "category", cascade =  CascadeType.ALL)
+    @JsonManagedReference
     private List<ModelMeter> meterModels;
 
     @ManyToOne
     @JoinColumn(name = "line_id", nullable = false)
+    @JsonBackReference
     private LineMeter line;
 
     public CategoryMeter(String name, LineMeter line) {

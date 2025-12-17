@@ -5,10 +5,17 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import org.eletra.energy.backend.controllers.BackController;
-import org.eletra.energy.backend.models.CategoryMeter;
-import org.eletra.energy.backend.models.LineMeter;
-import org.eletra.energy.backend.models.ModelMeter;
+import org.eletra.energy.frontend.Main;
+import org.eletra.energy.frontend.models.dtos.CategoryMeterDTO;
+import org.eletra.energy.frontend.models.dtos.LineMeterDTO;
+import org.eletra.energy.frontend.models.dtos.ModelMeterDTO;
+import org.eletra.energy.frontend.services.ApiCategoryMeterService;
+import org.eletra.energy.frontend.services.ApiLineMeterService;
+import org.eletra.energy.frontend.services.ApiModelMeterService;
+//import org.eletra.energy.backend.controllers.BackController;
+//import org.eletra.energy.backend.models.LineMeter;
+//import org.eletra.energy.backend.models.CategoryMeter;
+//import org.eletra.energy.backend.models.ModelMeter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,12 +35,26 @@ public class MainController {
     private TitledPane titledPaneModelos;
 
     // Atributos auxiliares
-    private BackController backController;
+//    private BackController backController;
+    private List<CategoryMeterDTO> categoryMeters;
+    private List<LineMeterDTO> lineMeters;
+    private List<ModelMeterDTO> modelMeters;
+
+    private ApiLineMeterService apiLineMeterService;
+    private ApiCategoryMeterService apiCategoryMeterService;
+    private ApiModelMeterService apiModelMeterService;
+
+    // Construtor
+    public MainController() {
+        this.apiLineMeterService = new ApiLineMeterService();
+        this.apiCategoryMeterService = new ApiCategoryMeterService();
+        this.apiModelMeterService = new ApiModelMeterService();
+    }
 
     private void loadComboBox() {
 
-        ArrayList<String> meterLinesNames = backController.getMeterLines().stream()
-                .map(LineMeter::getName)
+        ArrayList<String> meterLinesNames = lineMeters.stream()
+                .map(LineMeterDTO::getName)
                 .collect(Collectors.toCollection(ArrayList::new));
 
         comboBox.getItems().addAll(meterLinesNames);
@@ -41,7 +62,7 @@ public class MainController {
 
     private void loadTreeItem(String loadLine) {
 
-        LineMeter selectedLine = backController.getMeterLines().stream()
+        LineMeterDTO selectedLine = lineMeters.stream()
                 .filter(line -> loadLine.equals(line.getName()))
                 .findFirst()
                 .orElse(null);
@@ -56,7 +77,7 @@ public class MainController {
 
         treeItem.getChildren().setAll(categories);
 
-        for (CategoryMeter category : selectedLine.getMeterCategories()) {
+        for (CategoryMeterDTO category : selectedLine.getMeterCategories()) {
 
             List<TreeItem<String>> modelItems = category.getMeterModels().stream()
                     .map(mod -> new TreeItem<>(mod.getName()))
@@ -75,7 +96,14 @@ public class MainController {
     // Métodos FXML
     @FXML
     public void initialize() {
-        backController = new BackController();
+        try {
+            lineMeters = apiLineMeterService.getLineMeters("meter-lines");
+            categoryMeters = apiCategoryMeterService.getCategoryMeters("meter-categories");
+            modelMeters = apiModelMeterService.getModelMeters("meter-models");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         loadComboBox();
     }
 

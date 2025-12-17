@@ -1,6 +1,8 @@
 package org.eletra.energy.backend.models;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import java.util.UUID;
@@ -20,6 +22,7 @@ public class ModelMeter {
 
     @ManyToOne
     @JoinColumn(name= "category_id", nullable = false)
+    @JsonBackReference
     private CategoryMeter category;
 
     public ModelMeter(String name, CategoryMeter category) {
