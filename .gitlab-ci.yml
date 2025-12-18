@@ -68,4 +68,4 @@ frontend-package:
     - mvn package
   artifacts:
     paths:
-      - frontend/target/jfx/native/ProjectIntegration-1.0.exe
+      - frontend/target/jfx/native/ProjectIntegration.exe
