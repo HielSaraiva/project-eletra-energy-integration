@@ -1,4 +1,6 @@
-image: maven:3.9.11-eclipse-temurin-8
+default:
+  tags:
+    - ami-shell
 
 variables:
   MAVEN_OPTS: >-
