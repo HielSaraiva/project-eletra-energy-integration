@@ -32,3 +32,8 @@
 - Build no teamcity do projeto de integração configurado para executar os testes unitários, gerar um instalador e disponibilizar automaticamente o instalador da aplicação.
 - Disponibilização do instalador da aplicação projeto de integração gerada através da CI de acordo com as especificações do projeto 04.
 - Arquivo de Backup do banco de dados compatível com a versão do projeto 04.
+
+
+# Colaboradores
+
+- Hiel Saraiva
