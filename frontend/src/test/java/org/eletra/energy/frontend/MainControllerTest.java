@@ -12,17 +12,23 @@ import org.eletra.energy.frontend.models.dtos.ModelMeterDTO;
 import org.eletra.energy.frontend.services.ApiCategoryMeterService;
 import org.eletra.energy.frontend.services.ApiLineMeterService;
 import org.eletra.energy.frontend.services.ApiModelMeterService;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 
 
 import javax.sound.sampled.Line;
+import javax.sound.sampled.LineEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-import static org.mockito.Mockito.spy;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class MainControllerTest extends ApplicationTest {
 
@@ -38,29 +44,217 @@ public class MainControllerTest extends ApplicationTest {
         mc.setTreeItem(new TreeItem<>());
         mc.setTitledPaneLinhas(new TitledPane());
         mc.setTitledPaneModelos(new TitledPane());
-        mc.setLineMeters(mockLineMeters());
-        mc.setCategoryMeters(mockCategoryMeters());
-        mc.setModelMeters(mockModelMeters());
+    }
+
+    @After
+    public void setDown() {
+
+        mc.setComboBox(null);
+        mc.setTreeView(null);
+        mc.setTreeItem(null);
+        mc.setTitledPaneLinhas(null);
+        mc.setTitledPaneModelos(null);
+        mc.setApiLineMeterService(null);
+        mc.setApiCategoryMeterService(null);
+        mc.setApiModelMeterService(null);
+        mc.setLineMeters(null);
+        mc.setCategoryMeters(null);
+        mc.setModelMeters(null);
+        mc = null;
     }
 
     @Test
-    public void testInitialize() {
+    public void testInitialize01() throws IOException {
+
         // Arrange
+        mc.setApiLineMeterService(mock(ApiLineMeterService.class));
+        mc.setApiCategoryMeterService(mock(ApiCategoryMeterService.class));
+        mc.setApiModelMeterService(mock(ApiModelMeterService.class));
+
+        when(mc.getApiLineMeterService().getLineMeters("meter-lines")).thenReturn(mockLineMeters());
+        when(mc.getApiCategoryMeterService().getCategoryMeters("meter-categories")).thenReturn(mockCategoryMeters());
+        when(mc.getApiModelMeterService().getModelMeters("meter-models")).thenReturn(mockModelMeters());
 
         // Act
+        mc.initialize();
 
         // Assert
-
+        verify(mc.getApiLineMeterService(), times(1)).getLineMeters("meter-lines");
+        verify(mc.getApiCategoryMeterService(), times(1)).getCategoryMeters("meter-categories");
+        verify(mc.getApiModelMeterService(), times(1)).getModelMeters("meter-models");
     }
 
     @Test
-    public void testLoadComboBox() {
+    public void testInitialize02() {
+
         // Arrange
+        mc.setApiLineMeterService(spy(ApiLineMeterService.class));
+        mc.setApiCategoryMeterService(spy(ApiCategoryMeterService.class));
+        mc.setApiModelMeterService(spy(ApiModelMeterService.class));
+
+        List<String> expectedLineMeterNames = mockLineMeters().stream().map(LineMeterDTO::getName).collect(Collectors.toList());
 
         // Act
+        mc.initialize();
 
         // Assert
+        assertEquals(expectedLineMeterNames, mc.getComboBox().getItems());
+    }
 
+    @Test
+    public void testInitialize03() {
+
+        // Arrange
+        mc.setApiLineMeterService(spy(ApiLineMeterService.class));
+        mc.setApiCategoryMeterService(spy(ApiCategoryMeterService.class));
+        mc.setApiModelMeterService(spy(ApiModelMeterService.class));
+
+        // Act
+        mc.initialize();
+
+        // Assert
+        assertNull(mc.getComboBox().getSelectionModel().getSelectedItem());
+        assertTrue(mc.getTitledPaneModelos().isDisable());
+    }
+
+    @Test
+    public void testOnLineSelect01() {
+        // Arrange
+        mc.setApiLineMeterService(spy(ApiLineMeterService.class));
+        mc.setApiCategoryMeterService(spy(ApiCategoryMeterService.class));
+        mc.setApiModelMeterService(spy(ApiModelMeterService.class));
+
+        mc.initialize();
+
+        // Act
+        mc.getComboBox().getSelectionModel().select((new Random()).nextInt(mc.getComboBox().getItems().size()));
+        mc.onLineSelect();
+
+        // Assert
+        assertTrue(mc.getTreeItem().isExpanded());
+        assertFalse(mc.getTitledPaneModelos().isDisable());
+        assertTrue(mc.getTitledPaneModelos().isExpanded());
+        assertTrue(mc.getTreeItem().isExpanded());
+        assertTrue(mc.getTreeItem().getChildren().stream().allMatch(TreeItem::isExpanded));
+    }
+
+    @Test
+    public void testOnLineSelect02() {
+        // Arrange
+        mc.setApiLineMeterService(spy(ApiLineMeterService.class));
+        mc.setApiCategoryMeterService(spy(ApiCategoryMeterService.class));
+        mc.setApiModelMeterService(spy(ApiModelMeterService.class));
+
+        mc.initialize();
+
+        // Act
+        mc.getComboBox().getSelectionModel().select("Cronos");
+        mc.onLineSelect();
+
+        // Assert
+        assertEquals("[TreeItem [ value: Cronos Old ], TreeItem [ value: Cronos L ], TreeItem [ value: Cronos-NG ]]", mc.getTreeItem().getChildren().toString());
+    }
+
+    @Test
+    public void testOnLineSelect03() {
+        // Arrange
+        mc.setApiLineMeterService(spy(ApiLineMeterService.class));
+        mc.setApiCategoryMeterService(spy(ApiCategoryMeterService.class));
+        mc.setApiModelMeterService(spy(ApiModelMeterService.class));
+
+        mc.initialize();
+
+        // Act
+        mc.getComboBox().getSelectionModel().select("Ares");
+        mc.onLineSelect();
+
+        // Assert
+        assertEquals("[TreeItem [ value: Ares TB ], TreeItem [ value: Ares THS ]]", mc.getTreeItem().getChildren().toString());
+    }
+
+    @Test
+    public void testOnLineSelect04() {
+        // Arrange
+        mc.setApiLineMeterService(spy(ApiLineMeterService.class));
+        mc.setApiCategoryMeterService(spy(ApiCategoryMeterService.class));
+        mc.setApiModelMeterService(spy(ApiModelMeterService.class));
+
+        mc.initialize();
+
+        // Act
+        mc.getComboBox().getSelectionModel().select("Cronos");
+        mc.onLineSelect();
+
+        // Assert
+        assertEquals("[TreeItem [ value: Cronos 6001-A ], TreeItem [ value: Cronos 6003 ], TreeItem [ value: Cronos 7023 ]]", mc.getTreeItem().getChildren().get(0).getChildren().toString());
+    }
+
+    @Test
+    public void testOnLineSelect05() {
+        // Arrange
+        mc.setApiLineMeterService(spy(ApiLineMeterService.class));
+        mc.setApiCategoryMeterService(spy(ApiCategoryMeterService.class));
+        mc.setApiModelMeterService(spy(ApiModelMeterService.class));
+
+        mc.initialize();
+
+        // Act
+        mc.getComboBox().getSelectionModel().select("Cronos");
+        mc.onLineSelect();
+
+        // Assert
+        assertEquals("[TreeItem [ value: Cronos 6021L ], TreeItem [ value: Cronos 7023L ]]", mc.getTreeItem().getChildren().get(1).getChildren().toString());
+    }
+
+    @Test
+    public void testOnLineSelect06() {
+        // Arrange
+        mc.setApiLineMeterService(spy(ApiLineMeterService.class));
+        mc.setApiCategoryMeterService(spy(ApiCategoryMeterService.class));
+        mc.setApiModelMeterService(spy(ApiModelMeterService.class));
+
+        mc.initialize();
+
+        // Act
+        mc.getComboBox().getSelectionModel().select("Cronos");
+        mc.onLineSelect();
+
+        // Assert
+        assertEquals("[TreeItem [ value: Cronos 6001-NG ], TreeItem [ value: Cronos 6003-NG ], TreeItem [ value: Cronos 6021-NG ], TreeItem [ value: Cronos 6031-NG ], TreeItem [ value: Cronos 7021-NG ], TreeItem [ value: Cronos 7023-NG ]]", mc.getTreeItem().getChildren().get(2).getChildren().toString());
+    }
+
+    @Test
+    public void testOnLineSelect07() {
+        // Arrange
+        mc.setApiLineMeterService(spy(ApiLineMeterService.class));
+        mc.setApiCategoryMeterService(spy(ApiCategoryMeterService.class));
+        mc.setApiModelMeterService(spy(ApiModelMeterService.class));
+
+        mc.initialize();
+
+        // Act
+        mc.getComboBox().getSelectionModel().select("Ares");
+        mc.onLineSelect();
+
+        // Assert
+        assertEquals("[TreeItem [ value: ARES 7021 ], TreeItem [ value: ARES 7031 ], TreeItem [ value: ARES 7023 ]]", mc.getTreeItem().getChildren().get(0).getChildren().toString());
+    }
+
+    @Test
+    public void testOnLineSelect08() {
+        // Arrange
+        mc.setApiLineMeterService(spy(ApiLineMeterService.class));
+        mc.setApiCategoryMeterService(spy(ApiCategoryMeterService.class));
+        mc.setApiModelMeterService(spy(ApiModelMeterService.class));
+
+        mc.initialize();
+
+        // Act
+        mc.getComboBox().getSelectionModel().select("Ares");
+        mc.onLineSelect();
+
+        // Assert
+        assertEquals("[TreeItem [ value: ARES 8023 15 ], TreeItem [ value: ARES 8023 200 ], TreeItem [ value: ARES 8023 2,5 ]]", mc.getTreeItem().getChildren().get(1).getChildren().toString());
     }
 
     // Mocks

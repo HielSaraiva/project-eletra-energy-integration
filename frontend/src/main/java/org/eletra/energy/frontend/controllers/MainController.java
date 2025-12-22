@@ -104,6 +104,7 @@ public class MainController {
             throw new RuntimeException(e);
         }
 
+        titledPaneModelos.setDisable(true);
         loadComboBox();
     }
 
