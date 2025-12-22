@@ -86,7 +86,7 @@ jobs:
       - id: build-front
         name: Build frontend (JavaFX native)
         run: |
-          mvn -f frontend\pom.xml -B -ntp clean package
+          mvn -f frontend\pom.xml -B -ntp clean test package
           echo built=true>>%GITHUB_OUTPUT%
         shell: cmd
 
