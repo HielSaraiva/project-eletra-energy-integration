@@ -1,5 +1,6 @@
 package org.eletra.energy.frontend.models.dtos;
 
+import java.util.Objects;
 import java.util.UUID;
 
 
