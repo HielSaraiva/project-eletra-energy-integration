@@ -122,7 +122,7 @@ public class MainController {
             titledPaneModelos.setExpanded(true);
         } catch (IllegalArgumentException iae) {
             System.out.println("Error on load TreeItem: " + iae.getMessage());
-
+            
         } catch (Exception e) {
             System.out.println("Error on line select: " + e.getMessage());
         }

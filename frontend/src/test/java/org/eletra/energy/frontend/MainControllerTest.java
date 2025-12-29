@@ -15,6 +15,7 @@ import org.eletra.energy.frontend.services.ApiModelMeterService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockitoAnnotations;
 import org.testfx.framework.junit.ApplicationTest;
 
 
@@ -91,279 +92,193 @@ public class MainControllerTest extends ApplicationTest {
     public void testInitialize02() throws IOException {
 
         // Arrange
-        List<String> expectedLineMeterNames = mockLineMeters().stream().map(LineMeterDTO::getName).collect(Collectors.toList());
-
-        // Act
-        mc.initialize();
-
-        // Assert
-        assertEquals(expectedLineMeterNames.toString(), mc.getComboBox().getItems().toString());
-    }
-
-    @Test
-    public void testInitialize03() throws IOException {
-
-        // Arrange
         // No additional arrangement needed as setUp() already mocks the services
 
         // Act
         mc.initialize();
 
         // Assert
-        assertNull(mc.getComboBox().getSelectionModel().getSelectedItem());
-        assertTrue(mc.getTitledPaneModelos().isDisable());
+        assertNull("Confirms if the value of SelectedItem in ComboBox is null", mc.getComboBox().getSelectionModel().getSelectedItem());
+        assertTrue("Confirms if TitledPaneModelos is disable", mc.getTitledPaneModelos().isDisable());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testInitialize03() throws IOException {
+        // Arrange
+        when(mc.getApiLineMeterService().getLineMeters("meter-lines"))
+                .thenThrow(new RuntimeException("line service error"));
+        when(mc.getApiCategoryMeterService().getCategoryMeters("meter-categories"))
+                .thenThrow(new RuntimeException("category service error"));
+        when(mc.getApiModelMeterService().getModelMeters("meter-models"))
+                .thenThrow(new RuntimeException("model service error"));
+
+        // Act
+        mc.initialize();
+    }
+
+    @Test
+    public void testLoadComboBox() throws IOException {
+
+        // Arrange
+        List<String> expectedLineMeterNames = mockLineMeters().stream().map(LineMeterDTO::getName).collect(Collectors.toList());
+
+        // Act
+        mc.initialize();
+
+        // Assert
+        assertEquals("Confirms if the values of ComboBox items are the same as the values they should have", expectedLineMeterNames, mc.getComboBox().getItems());
     }
 
     @Test
     public void testOnLineSelect01() throws IOException {
         // Arrange
         mc.initialize();
-
-        for (int counter = 0; counter < mc.getLineMeters().size(); counter++) {
-            mc.getLineMeters().get(counter).setMeterCategories(mockCategoryMeters(counter + 1));
-        }
-
-        for (LineMeterDTO lineMeterDTO : mc.getLineMeters()) {
-            if (lineMeterDTO.getName().equals("Cronos")) {
-                for (int counter = 0; counter < lineMeterDTO.getMeterCategories().size(); counter++) {
-                    lineMeterDTO.getMeterCategories().get(counter).setMeterModels(mockModelMeters(counter + 1));
-                }
-            } else if (lineMeterDTO.getName().equals("Ares")) {
-                for (int counter = 0; counter < lineMeterDTO.getMeterCategories().size(); counter++) {
-                    lineMeterDTO.getMeterCategories().get(counter).setMeterModels(mockModelMeters(counter + 4));
-                }
-            } else {
-                throw new IllegalArgumentException("Unknown Line Meter Name: " + lineMeterDTO.getName());
-            }
-        }
+        mc.setLineMeters(initializeLineMetersDependency(mc));
 
         // Act
         mc.getComboBox().getSelectionModel().select((new Random()).nextInt(mc.getComboBox().getItems().size()));
         mc.onLineSelect();
 
         // Assert
-        assertTrue(mc.getTreeItem().isExpanded());
-        assertFalse(mc.getTitledPaneModelos().isDisable());
-        assertTrue(mc.getTitledPaneModelos().isExpanded());
-        assertTrue(mc.getTreeItem().isExpanded());
-        assertTrue(mc.getTreeItem().getChildren().stream().allMatch(TreeItem::isExpanded));
+        assertFalse("Confirms if TitledPaneModelos is enable", mc.getTitledPaneModelos().isDisable());
+        assertTrue("Confirms if TitledPaneModelos is expanded", mc.getTitledPaneModelos().isExpanded());
+        assertTrue("Confirms if TreeItem is expanded", mc.getTreeItem().isExpanded());
     }
 
-    @Test
+    @Test(expected = Exception.class)
     public void testOnLineSelect02() throws IOException {
         // Arrange
         mc.initialize();
+        mc.getComboBox().getSelectionModel().select(null);
 
-        for (int counter = 0; counter < mc.getLineMeters().size(); counter++) {
-            mc.getLineMeters().get(counter).setMeterCategories(mockCategoryMeters(counter + 1));
-        }
+        doThrow(Exception.class).when(mc).onLineSelect();
 
-        for (LineMeterDTO lineMeterDTO : mc.getLineMeters()) {
-            if (lineMeterDTO.getName().equals("Cronos")) {
-                for (int counter = 0; counter < lineMeterDTO.getMeterCategories().size(); counter++) {
-                    lineMeterDTO.getMeterCategories().get(counter).setMeterModels(mockModelMeters(counter + 1));
-                }
-            } else if (lineMeterDTO.getName().equals("Ares")) {
-                for (int counter = 0; counter < lineMeterDTO.getMeterCategories().size(); counter++) {
-                    lineMeterDTO.getMeterCategories().get(counter).setMeterModels(mockModelMeters(counter + 4));
-                }
-            } else {
-                throw new IllegalArgumentException("Unknown Line Meter Name: " + lineMeterDTO.getName());
-            }
-        }
+        // Act
+        mc.onLineSelect();
+    }
+
+    @Test
+    public void testLoadTreeItem01() throws IOException {
+        // Arrange
+        mc.initialize();
+        mc.setLineMeters(initializeLineMetersDependency(mc));
+
+        // Act
+        mc.getComboBox().getSelectionModel().select((new Random()).nextInt(mc.getComboBox().getItems().size()));
+        mc.onLineSelect();
+
+        // Assert
+        assertTrue("Confirms if all TreeItem childrens are expanded", mc.getTreeItem().getChildren().stream().allMatch(TreeItem::isExpanded));
+    }
+
+    @Test
+    public void testLoadTreeItem02() throws IOException {
+        // Arrange
+        mc.initialize();
+        mc.setLineMeters(initializeLineMetersDependency(mc));
 
         // Act
         mc.getComboBox().getSelectionModel().select("Cronos");
         mc.onLineSelect();
 
         // Assert
-        assertEquals("[TreeItem [ value: Cronos Old ], TreeItem [ value: Cronos L ], TreeItem [ value: Cronos-NG ]]", mc.getTreeItem().getChildren().toString());
+        assertEquals("Confirms if the categories have the expected values", "[TreeItem [ value: Cronos Old ], TreeItem [ value: Cronos L ], TreeItem [ value: Cronos-NG ]]", mc.getTreeItem().getChildren().toString());
     }
 
     @Test
-    public void testOnLineSelect03() throws IOException {
+    public void testLoadTreeItem03() throws IOException {
         // Arrange
         mc.initialize();
-
-        for (int counter = 0; counter < mc.getLineMeters().size(); counter++) {
-            mc.getLineMeters().get(counter).setMeterCategories(mockCategoryMeters(counter + 1));
-        }
-
-        for (LineMeterDTO lineMeterDTO : mc.getLineMeters()) {
-            if (lineMeterDTO.getName().equals("Cronos")) {
-                for (int counter = 0; counter < lineMeterDTO.getMeterCategories().size(); counter++) {
-                    lineMeterDTO.getMeterCategories().get(counter).setMeterModels(mockModelMeters(counter + 1));
-                }
-            } else if (lineMeterDTO.getName().equals("Ares")) {
-                for (int counter = 0; counter < lineMeterDTO.getMeterCategories().size(); counter++) {
-                    lineMeterDTO.getMeterCategories().get(counter).setMeterModels(mockModelMeters(counter + 4));
-                }
-            } else {
-                throw new IllegalArgumentException("Unknown Line Meter Name: " + lineMeterDTO.getName());
-            }
-        }
+        mc.setLineMeters(initializeLineMetersDependency(mc));
 
         // Act
         mc.getComboBox().getSelectionModel().select("Ares");
         mc.onLineSelect();
 
         // Assert
-        assertEquals("[TreeItem [ value: Ares TB ], TreeItem [ value: Ares THS ]]", mc.getTreeItem().getChildren().toString());
+        assertEquals("Confirms if the categories have the expected values", "[TreeItem [ value: Ares TB ], TreeItem [ value: Ares THS ]]", mc.getTreeItem().getChildren().toString());
     }
 
     @Test
-    public void testOnLineSelect04() throws IOException {
+    public void testLoadTreeItem04() throws IOException {
         // Arrange
         mc.initialize();
-
-        for (int counter = 0; counter < mc.getLineMeters().size(); counter++) {
-            mc.getLineMeters().get(counter).setMeterCategories(mockCategoryMeters(counter + 1));
-        }
-
-        for (LineMeterDTO lineMeterDTO : mc.getLineMeters()) {
-            if (lineMeterDTO.getName().equals("Cronos")) {
-                for (int counter = 0; counter < lineMeterDTO.getMeterCategories().size(); counter++) {
-                    lineMeterDTO.getMeterCategories().get(counter).setMeterModels(mockModelMeters(counter + 1));
-                }
-            } else if (lineMeterDTO.getName().equals("Ares")) {
-                for (int counter = 0; counter < lineMeterDTO.getMeterCategories().size(); counter++) {
-                    lineMeterDTO.getMeterCategories().get(counter).setMeterModels(mockModelMeters(counter + 4));
-                }
-            } else {
-                throw new IllegalArgumentException("Unknown Line Meter Name: " + lineMeterDTO.getName());
-            }
-        }
+        mc.setLineMeters(initializeLineMetersDependency(mc));
 
         // Act
         mc.getComboBox().getSelectionModel().select("Cronos");
         mc.onLineSelect();
 
         // Assert
-        assertEquals("[TreeItem [ value: Cronos 6001-A ], TreeItem [ value: Cronos 6003 ], TreeItem [ value: Cronos 7023 ]]", mc.getTreeItem().getChildren().get(0).getChildren().toString());
+        assertEquals("Confirms if the models have the expected values", "[TreeItem [ value: Cronos 6001-A ], TreeItem [ value: Cronos 6003 ], TreeItem [ value: Cronos 7023 ]]", mc.getTreeItem().getChildren().get(0).getChildren().toString());
     }
 
     @Test
-    public void testOnLineSelect05() throws IOException {
+    public void testLoadTreeItem05() throws IOException {
         // Arrange
         mc.initialize();
-
-        for (int counter = 0; counter < mc.getLineMeters().size(); counter++) {
-            mc.getLineMeters().get(counter).setMeterCategories(mockCategoryMeters(counter + 1));
-        }
-
-        for (LineMeterDTO lineMeterDTO : mc.getLineMeters()) {
-            if (lineMeterDTO.getName().equals("Cronos")) {
-                for (int counter = 0; counter < lineMeterDTO.getMeterCategories().size(); counter++) {
-                    lineMeterDTO.getMeterCategories().get(counter).setMeterModels(mockModelMeters(counter + 1));
-                }
-            } else if (lineMeterDTO.getName().equals("Ares")) {
-                for (int counter = 0; counter < lineMeterDTO.getMeterCategories().size(); counter++) {
-                    lineMeterDTO.getMeterCategories().get(counter).setMeterModels(mockModelMeters(counter + 4));
-                }
-            } else {
-                throw new IllegalArgumentException("Unknown Line Meter Name: " + lineMeterDTO.getName());
-            }
-        }
+        mc.setLineMeters(initializeLineMetersDependency(mc));
 
         // Act
         mc.getComboBox().getSelectionModel().select("Cronos");
         mc.onLineSelect();
 
         // Assert
-        assertEquals("[TreeItem [ value: Cronos 6021L ], TreeItem [ value: Cronos 7023L ]]", mc.getTreeItem().getChildren().get(1).getChildren().toString());
+        assertEquals("Confirms if the models have the expected values", "[TreeItem [ value: Cronos 6021L ], TreeItem [ value: Cronos 7023L ]]", mc.getTreeItem().getChildren().get(1).getChildren().toString());
     }
 
     @Test
-    public void testOnLineSelect06() throws IOException {
+    public void testLoadTreeItem06() throws IOException {
         // Arrange
         mc.initialize();
-
-        for (int counter = 0; counter < mc.getLineMeters().size(); counter++) {
-            mc.getLineMeters().get(counter).setMeterCategories(mockCategoryMeters(counter + 1));
-        }
-
-        for (LineMeterDTO lineMeterDTO : mc.getLineMeters()) {
-            if (lineMeterDTO.getName().equals("Cronos")) {
-                for (int counter = 0; counter < lineMeterDTO.getMeterCategories().size(); counter++) {
-                    lineMeterDTO.getMeterCategories().get(counter).setMeterModels(mockModelMeters(counter + 1));
-                }
-            } else if (lineMeterDTO.getName().equals("Ares")) {
-                for (int counter = 0; counter < lineMeterDTO.getMeterCategories().size(); counter++) {
-                    lineMeterDTO.getMeterCategories().get(counter).setMeterModels(mockModelMeters(counter + 4));
-                }
-            } else {
-                throw new IllegalArgumentException("Unknown Line Meter Name: " + lineMeterDTO.getName());
-            }
-        }
+        mc.setLineMeters(initializeLineMetersDependency(mc));
 
         // Act
         mc.getComboBox().getSelectionModel().select("Cronos");
         mc.onLineSelect();
 
         // Assert
-        assertEquals("[TreeItem [ value: Cronos 6001-NG ], TreeItem [ value: Cronos 6003-NG ], TreeItem [ value: Cronos 6021-NG ], TreeItem [ value: Cronos 6031-NG ], TreeItem [ value: Cronos 7021-NG ], TreeItem [ value: Cronos 7023-NG ]]", mc.getTreeItem().getChildren().get(2).getChildren().toString());
+        assertEquals("Confirms if the models have the expected values", "[TreeItem [ value: Cronos 6001-NG ], TreeItem [ value: Cronos 6003-NG ], TreeItem [ value: Cronos 6021-NG ], TreeItem [ value: Cronos 6031-NG ], TreeItem [ value: Cronos 7021-NG ], TreeItem [ value: Cronos 7023-NG ]]", mc.getTreeItem().getChildren().get(2).getChildren().toString());
     }
 
     @Test
-    public void testOnLineSelect07() throws IOException {
+    public void testLoadTreeItem07() throws IOException {
         // Arrange
         mc.initialize();
-
-        for (int counter = 0; counter < mc.getLineMeters().size(); counter++) {
-            mc.getLineMeters().get(counter).setMeterCategories(mockCategoryMeters(counter + 1));
-        }
-
-        for (LineMeterDTO lineMeterDTO : mc.getLineMeters()) {
-            if (lineMeterDTO.getName().equals("Cronos")) {
-                for (int counter = 0; counter < lineMeterDTO.getMeterCategories().size(); counter++) {
-                    lineMeterDTO.getMeterCategories().get(counter).setMeterModels(mockModelMeters(counter + 1));
-                }
-            } else if (lineMeterDTO.getName().equals("Ares")) {
-                for (int counter = 0; counter < lineMeterDTO.getMeterCategories().size(); counter++) {
-                    lineMeterDTO.getMeterCategories().get(counter).setMeterModels(mockModelMeters(counter + 4));
-                }
-            } else {
-                throw new IllegalArgumentException("Unknown Line Meter Name: " + lineMeterDTO.getName());
-            }
-        }
+        mc.setLineMeters(initializeLineMetersDependency(mc));
 
         // Act
         mc.getComboBox().getSelectionModel().select("Ares");
         mc.onLineSelect();
 
         // Assert
-        assertEquals("[TreeItem [ value: ARES 7021 ], TreeItem [ value: ARES 7031 ], TreeItem [ value: ARES 7023 ]]", mc.getTreeItem().getChildren().get(0).getChildren().toString());
+        assertEquals("Confirms if the models have the expected values", "[TreeItem [ value: ARES 7021 ], TreeItem [ value: ARES 7031 ], TreeItem [ value: ARES 7023 ]]", mc.getTreeItem().getChildren().get(0).getChildren().toString());
     }
 
     @Test
-    public void testOnLineSelect08() throws IOException {
+    public void testLoadTreeItem08() throws IOException {
         // Arrange
         mc.initialize();
-
-        for (int counter = 0; counter < mc.getLineMeters().size(); counter++) {
-            mc.getLineMeters().get(counter).setMeterCategories(mockCategoryMeters(counter + 1));
-        }
-
-        for (LineMeterDTO lineMeterDTO : mc.getLineMeters()) {
-            if (lineMeterDTO.getName().equals("Cronos")) {
-                for (int counter = 0; counter < lineMeterDTO.getMeterCategories().size(); counter++) {
-                    lineMeterDTO.getMeterCategories().get(counter).setMeterModels(mockModelMeters(counter + 1));
-                }
-            } else if (lineMeterDTO.getName().equals("Ares")) {
-                for (int counter = 0; counter < lineMeterDTO.getMeterCategories().size(); counter++) {
-                    lineMeterDTO.getMeterCategories().get(counter).setMeterModels(mockModelMeters(counter + 4));
-                }
-            } else {
-                throw new IllegalArgumentException("Unknown Line Meter Name: " + lineMeterDTO.getName());
-            }
-        }
+        mc.setLineMeters(initializeLineMetersDependency(mc));
 
         // Act
         mc.getComboBox().getSelectionModel().select("Ares");
         mc.onLineSelect();
 
         // Assert
-        assertEquals("[TreeItem [ value: ARES 8023 15 ], TreeItem [ value: ARES 8023 200 ], TreeItem [ value: ARES 8023 2,5 ]]", mc.getTreeItem().getChildren().get(1).getChildren().toString());
+        assertEquals("Confirms if the models have the expected values", "[TreeItem [ value: ARES 8023 15 ], TreeItem [ value: ARES 8023 200 ], TreeItem [ value: ARES 8023 2,5 ]]", mc.getTreeItem().getChildren().get(1).getChildren().toString());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testLoadTreeItem09() throws IOException {
+        // Arrange
+        mc.initialize();
+        mc.getComboBox().setValue("Invalid Line Name");
+
+        doThrow(new IllegalArgumentException()).when(mc).onLineSelect();
+
+        // Act
+        mc.onLineSelect();
     }
 
     // Mocks
@@ -461,5 +376,27 @@ public class MainControllerTest extends ApplicationTest {
         } else {
             throw new IllegalArgumentException("Invalid Index");
         }
+    }
+
+    private List<LineMeterDTO> initializeLineMetersDependency(MainController mc) {
+        for (int counter = 0; counter < mc.getLineMeters().size(); counter++) {
+            mc.getLineMeters().get(counter).setMeterCategories(mockCategoryMeters(counter + 1));
+        }
+
+        for (LineMeterDTO lineMeterDTO : mc.getLineMeters()) {
+            if (lineMeterDTO.getName().equals("Cronos")) {
+                for (int counter = 0; counter < lineMeterDTO.getMeterCategories().size(); counter++) {
+                    lineMeterDTO.getMeterCategories().get(counter).setMeterModels(mockModelMeters(counter + 1));
+                }
+            } else if (lineMeterDTO.getName().equals("Ares")) {
+                for (int counter = 0; counter < lineMeterDTO.getMeterCategories().size(); counter++) {
+                    lineMeterDTO.getMeterCategories().get(counter).setMeterModels(mockModelMeters(counter + 4));
+                }
+            } else {
+                throw new IllegalArgumentException("Unknown Line Meter Name: " + lineMeterDTO.getName());
+            }
+        }
+
+        return mc.getLineMeters();
     }
 }
