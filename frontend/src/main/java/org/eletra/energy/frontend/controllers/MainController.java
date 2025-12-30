@@ -35,7 +35,6 @@ public class MainController {
     private TitledPane titledPaneModelos;
 
     // Atributos auxiliares
-//    private BackController backController;
     private List<CategoryMeterDTO> categoryMeters;
     private List<LineMeterDTO> lineMeters;
     private List<ModelMeterDTO> modelMeters;
@@ -51,6 +50,7 @@ public class MainController {
         this.apiModelMeterService = new ApiModelMeterService();
     }
 
+    // Métodos auxiliares
     private void loadComboBox() {
 
         ArrayList<String> meterLinesNames = lineMeters.stream()
@@ -104,6 +104,7 @@ public class MainController {
             throw new RuntimeException(e);
         }
 
+        titledPaneModelos.setDisable(true);
         loadComboBox();
     }
 
@@ -121,9 +122,98 @@ public class MainController {
             titledPaneModelos.setExpanded(true);
         } catch (IllegalArgumentException iae) {
             System.out.println("Error on load TreeItem: " + iae.getMessage());
-
+            
         } catch (Exception e) {
             System.out.println("Error on line select: " + e.getMessage());
         }
+    }
+
+    // Getters e Setters
+    public ComboBox<String> getComboBox() {
+        return comboBox;
+    }
+
+    public void setComboBox(ComboBox<String> comboBox) {
+        this.comboBox = comboBox;
+    }
+
+    public TreeView<String> getTreeView() {
+        return treeView;
+    }
+
+    public void setTreeView(TreeView<String> treeView) {
+        this.treeView = treeView;
+    }
+
+    public TreeItem<String> getTreeItem() {
+        return treeItem;
+    }
+
+    public void setTreeItem(TreeItem<String> treeItem) {
+        this.treeItem = treeItem;
+    }
+
+    public TitledPane getTitledPaneModelos() {
+        return titledPaneModelos;
+    }
+
+    public void setTitledPaneModelos(TitledPane titledPaneModelos) {
+        this.titledPaneModelos = titledPaneModelos;
+    }
+
+    public TitledPane getTitledPaneLinhas() {
+        return titledPaneLinhas;
+    }
+
+    public void setTitledPaneLinhas(TitledPane titledPaneLinhas) {
+        this.titledPaneLinhas = titledPaneLinhas;
+    }
+
+    public List<CategoryMeterDTO> getCategoryMeters() {
+        return categoryMeters;
+    }
+
+    public void setCategoryMeters(List<CategoryMeterDTO> categoryMeters) {
+        this.categoryMeters = categoryMeters;
+    }
+
+    public List<LineMeterDTO> getLineMeters() {
+        return lineMeters;
+    }
+
+    public void setLineMeters(List<LineMeterDTO> lineMeters) {
+        this.lineMeters = lineMeters;
+    }
+
+    public List<ModelMeterDTO> getModelMeters() {
+        return modelMeters;
+    }
+
+    public void setModelMeters(List<ModelMeterDTO> modelMeters) {
+        this.modelMeters = modelMeters;
+    }
+
+    public ApiLineMeterService getApiLineMeterService() {
+        return apiLineMeterService;
+    }
+
+    public void setApiLineMeterService(ApiLineMeterService apiLineMeterService) {
+        this.apiLineMeterService = apiLineMeterService;
+    }
+
+    public ApiCategoryMeterService getApiCategoryMeterService() {
+        return apiCategoryMeterService;
+    }
+
+    public void setApiCategoryMeterService(ApiCategoryMeterService apiCategoryMeterService) {
+        this.apiCategoryMeterService = apiCategoryMeterService;
+    }
+
+    public ApiModelMeterService getApiModelMeterService() {
+        return apiModelMeterService;
+    }
+
+    public void setApiModelMeterService(ApiModelMeterService apiModelMeterService) {
+        this.apiModelMeterService = apiModelMeterService;
     }
 }
