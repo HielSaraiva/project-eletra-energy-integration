@@ -1,6 +1,7 @@
 package org.eletra.energy.frontend.models.dtos;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class CategoryMeterDTO {
