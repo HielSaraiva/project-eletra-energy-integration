@@ -22,7 +22,6 @@ public class ModelMeter {
 
     @ManyToOne
     @JoinColumn(name= "category_id", nullable = false)
-    @JsonBackReference
     private CategoryMeter category;
 
     public ModelMeter(String name, CategoryMeter category) {

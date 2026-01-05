@@ -21,13 +21,8 @@ public class CategoryMeter {
     @Column(name = "name", unique = true, nullable = false)
     private String name;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "category", cascade =  CascadeType.ALL)
-    @JsonManagedReference
-    private List<ModelMeter> meterModels;
-
     @ManyToOne
     @JoinColumn(name = "line_id", nullable = false)
-    @JsonBackReference
     private LineMeter line;
 
     public CategoryMeter(String name, LineMeter line) {
