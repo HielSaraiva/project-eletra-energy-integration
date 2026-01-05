@@ -12,6 +12,7 @@ import org.eletra.energy.frontend.models.dtos.ModelMeterDTO;
 import org.eletra.energy.frontend.services.ApiCategoryMeterService;
 import org.eletra.energy.frontend.services.ApiLineMeterService;
 import org.eletra.energy.frontend.services.ApiModelMeterService;
+import org.eletra.energy.frontend.ui.UILoader;
 //import org.eletra.energy.backend.controllers.BackController;
 //import org.eletra.energy.backend.models.LineMeter;
 //import org.eletra.energy.backend.models.CategoryMeter;
@@ -35,13 +36,11 @@ public class MainController {
     private TitledPane titledPaneModelos;
 
     // Atributos auxiliares
-    private List<CategoryMeterDTO> categoryMeters;
-    private List<LineMeterDTO> lineMeters;
-    private List<ModelMeterDTO> modelMeters;
-
     private ApiLineMeterService apiLineMeterService;
     private ApiCategoryMeterService apiCategoryMeterService;
     private ApiModelMeterService apiModelMeterService;
+
+    private UILoader uiLoader;
 
     // Construtor
     public MainController() {
@@ -50,82 +49,34 @@ public class MainController {
         this.apiModelMeterService = new ApiModelMeterService();
     }
 
-    // Métodos auxiliares
-    private void loadComboBox() {
-
-        ArrayList<String> meterLinesNames = lineMeters.stream()
-                .map(LineMeterDTO::getName)
-                .collect(Collectors.toCollection(ArrayList::new));
-
-        comboBox.getItems().addAll(meterLinesNames);
-    }
-
-    private void loadTreeItem(String loadLine) {
-
-        LineMeterDTO selectedLine = lineMeters.stream()
-                .filter(line -> loadLine.equals(line.getName()))
-                .findFirst()
-                .orElse(null);
-
-        if (selectedLine == null) {
-            throw new IllegalArgumentException("Line not found");
-        }
-
-        ArrayList<TreeItem<String>> categories = selectedLine.getMeterCategories().stream()
-                .map(cat -> new TreeItem<>(cat.getName()))
-                .collect(Collectors.toCollection(ArrayList::new));
-
-        treeItem.getChildren().setAll(categories);
-
-        for (CategoryMeterDTO category : selectedLine.getMeterCategories()) {
-
-            List<TreeItem<String>> modelItems = category.getMeterModels().stream()
-                    .map(mod -> new TreeItem<>(mod.getName()))
-                    .collect(Collectors.toList());
-
-            TreeItem<String> categoryTreeItem = treeItem.getChildren().get(
-                    selectedLine.getMeterCategories().indexOf(category)
-            );
-
-            categoryTreeItem.getChildren().setAll(modelItems);
-            categoryTreeItem.setExpanded(true);
-        }
-
-    }
-
     // Métodos FXML
     @FXML
     public void initialize() {
         try {
-            lineMeters = apiLineMeterService.getLineMeters("meter-lines");
-            categoryMeters = apiCategoryMeterService.getCategoryMeters("meter-categories");
-            modelMeters = apiModelMeterService.getModelMeters("meter-models");
+            List<LineMeterDTO> lineMeters = apiLineMeterService.getLineMeters("meter-lines");
+            List<CategoryMeterDTO> categoryMeters = apiCategoryMeterService.getCategoryMeters("meter-categories");
+            List<ModelMeterDTO> modelMeters = apiModelMeterService.getModelMeters("meter-models");
+
+            uiLoader = new UILoader(lineMeters, categoryMeters, modelMeters);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
         titledPaneModelos.setDisable(true);
-        loadComboBox();
+        uiLoader.loadComboBox(comboBox);
     }
 
     @FXML
     public void onLineSelect() {
-        try {
-            treeView.setShowRoot(false);
 
-            String selectedLineName = comboBox.getValue();
+        treeView.setShowRoot(false);
 
-            loadTreeItem(selectedLineName);
+        String selectedLineName = comboBox.getValue();
+        uiLoader.loadTreeItem(treeItem, selectedLineName);
 
-            treeItem.setExpanded(true);
-            titledPaneModelos.setDisable(false);
-            titledPaneModelos.setExpanded(true);
-        } catch (IllegalArgumentException iae) {
-            System.out.println("Error on load TreeItem: " + iae.getMessage());
-            
-        } catch (Exception e) {
-            System.out.println("Error on line select: " + e.getMessage());
-        }
+        treeItem.setExpanded(true);
+        titledPaneModelos.setDisable(false);
+        titledPaneModelos.setExpanded(true);
     }
 
     // Getters e Setters
@@ -135,10 +86,6 @@ public class MainController {
 
     public void setComboBox(ComboBox<String> comboBox) {
         this.comboBox = comboBox;
-    }
-
-    public TreeView<String> getTreeView() {
-        return treeView;
     }
 
     public void setTreeView(TreeView<String> treeView) {
@@ -161,36 +108,8 @@ public class MainController {
         this.titledPaneModelos = titledPaneModelos;
     }
 
-    public TitledPane getTitledPaneLinhas() {
-        return titledPaneLinhas;
-    }
-
     public void setTitledPaneLinhas(TitledPane titledPaneLinhas) {
         this.titledPaneLinhas = titledPaneLinhas;
-    }
-
-    public List<CategoryMeterDTO> getCategoryMeters() {
-        return categoryMeters;
-    }
-
-    public void setCategoryMeters(List<CategoryMeterDTO> categoryMeters) {
-        this.categoryMeters = categoryMeters;
-    }
-
-    public List<LineMeterDTO> getLineMeters() {
-        return lineMeters;
-    }
-
-    public void setLineMeters(List<LineMeterDTO> lineMeters) {
-        this.lineMeters = lineMeters;
-    }
-
-    public List<ModelMeterDTO> getModelMeters() {
-        return modelMeters;
-    }
-
-    public void setModelMeters(List<ModelMeterDTO> modelMeters) {
-        this.modelMeters = modelMeters;
     }
 
     public ApiLineMeterService getApiLineMeterService() {
@@ -215,5 +134,13 @@ public class MainController {
 
     public void setApiModelMeterService(ApiModelMeterService apiModelMeterService) {
         this.apiModelMeterService = apiModelMeterService;
+    }
+
+    public UILoader getUiLoader() {
+        return uiLoader;
+    }
+
+    public void setUiLoader(UILoader uiLoader) {
+        this.uiLoader = uiLoader;
     }
 }

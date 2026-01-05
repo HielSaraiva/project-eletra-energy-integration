@@ -8,7 +8,6 @@ public class CategoryMeterDTO {
 
     private UUID id;
     private String name;
-    private List<ModelMeterDTO> meterModels;
     private LineMeterDTO line;
 
     public CategoryMeterDTO() {
@@ -35,14 +34,6 @@ public class CategoryMeterDTO {
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public List<ModelMeterDTO> getMeterModels() {
-        return meterModels;
-    }
-
-    public void setMeterModels(List<ModelMeterDTO> meterModels) {
-        this.meterModels = meterModels;
     }
 
     public LineMeterDTO getLine() {
