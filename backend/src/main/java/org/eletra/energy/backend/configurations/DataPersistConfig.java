@@ -27,24 +27,20 @@ public class DataPersistConfig {
             cronosCategories.add(new CategoryMeter("Cronos Old", meterLines.get(0)));
             cronosCategories.add(new CategoryMeter("Cronos L", meterLines.get(0)));
             cronosCategories.add(new CategoryMeter("Cronos-NG", meterLines.get(0)));
-            meterLines.get(0).setMeterCategories(cronosCategories);
 
             List<CategoryMeter> aresCategories = new ArrayList<>();
             aresCategories.add(new CategoryMeter("Ares TB", meterLines.get(1)));
             aresCategories.add(new CategoryMeter("Ares THS", meterLines.get(1)));
-            meterLines.get(1).setMeterCategories(aresCategories);
 
             // Criar Modelos
             List<ModelMeter> cronosOldModels = new ArrayList<>();
             cronosOldModels.add(new ModelMeter("Cronos 6001-A", cronosCategories.get(0)));
             cronosOldModels.add(new ModelMeter("Cronos 6003", cronosCategories.get(0)));
             cronosOldModels.add(new ModelMeter("Cronos 7023", cronosCategories.get(0)));
-            cronosCategories.get(0).setMeterModels(cronosOldModels);
 
             List<ModelMeter> cronosLModels = new ArrayList<>();
             cronosLModels.add(new ModelMeter("Cronos 6021L", cronosCategories.get(1)));
             cronosLModels.add(new ModelMeter("Cronos 7023L", cronosCategories.get(1)));
-            cronosCategories.get(1).setMeterModels(cronosLModels);
 
             List<ModelMeter> cronosNGModels = new ArrayList<>();
             cronosNGModels.add(new ModelMeter("Cronos 6001-NG", cronosCategories.get(2)));
@@ -53,25 +49,43 @@ public class DataPersistConfig {
             cronosNGModels.add(new ModelMeter("Cronos 6031-NG", cronosCategories.get(2)));
             cronosNGModels.add(new ModelMeter("Cronos 7021-NG", cronosCategories.get(2)));
             cronosNGModels.add(new ModelMeter("Cronos 7023-NG", cronosCategories.get(2)));
-            cronosCategories.get(2).setMeterModels(cronosNGModels);
 
             List<ModelMeter> aresTBModels = new ArrayList<>();
             aresTBModels.add(new ModelMeter("ARES 7021", aresCategories.get(0)));
             aresTBModels.add(new ModelMeter("ARES 7031", aresCategories.get(0)));
             aresTBModels.add(new ModelMeter("ARES 7023", aresCategories.get(0)));
-            aresCategories.get(0).setMeterModels(aresTBModels);
 
             List<ModelMeter> aresTHSModels = new ArrayList<>();
             aresTHSModels.add(new ModelMeter("ARES 8023 15", aresCategories.get(1)));
             aresTHSModels.add(new ModelMeter("ARES 8023 200", aresCategories.get(1)));
             aresTHSModels.add(new ModelMeter("ARES 8023 2,5", aresCategories.get(1)));
-            aresCategories.get(1).setMeterModels(aresTHSModels);
 
             // Salvar no banco de dados
             session.beginTransaction();
 
             for (LineMeter meterLine : meterLines) {
                 session.persist(meterLine);
+            }
+            for (CategoryMeter category : cronosCategories) {
+                session.persist(category);
+            }
+            for (CategoryMeter category : aresCategories) {
+                session.persist(category);
+            }
+            for (ModelMeter model : cronosOldModels) {
+                session.persist(model);
+            }
+            for (ModelMeter model : cronosLModels) {
+                session.persist(model);
+            }
+            for (ModelMeter model : cronosNGModels) {
+                session.persist(model);
+            }
+            for (ModelMeter model : aresTBModels) {
+                session.persist(model);
+            }
+            for (ModelMeter model : aresTHSModels) {
+                session.persist(model);
             }
 
             session.getTransaction().commit();
